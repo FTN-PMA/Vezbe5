@@ -42,10 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     private RelativeLayout mDrawerPane;
-    private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private ArrayList<NavItem> mNavItems = new ArrayList<NavItem>();
-    private AlertDialog dialog;
 
     //Sync stuff
     private PendingIntent pendingIntent;
@@ -53,14 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
     private SyncReceiver sync;
     public static String SYNC_DATA = "SYNC_DATA";
-
-    private String synctime;
-    private boolean allowSync;
-    private String lookupRadius;
-
-    private boolean allowReviewNotif;
-    private boolean allowCommentedNotif;
-    private SharedPreferences sharedPreferences;
 
 
     @Override
@@ -70,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         
         prepareMenu(mNavItems);
         
-        mTitle = mDrawerTitle = getTitle();
+        mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mDrawerList = (ListView) findViewById(R.id.navList);
         
@@ -129,10 +119,7 @@ public class MainActivity extends AppCompatActivity {
             selectItemFromDrawer(0);
         }
 
-        //sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         setUpReceiver();
-        
     }
 
     private void setUpReceiver(){
@@ -141,41 +128,11 @@ public class MainActivity extends AppCompatActivity {
         // Retrieve a PendingIntent that will perform a broadcast
         Intent alarmIntent = new Intent(this, SyncService.class);
         pendingIntent = PendingIntent.getService(this, 0, alarmIntent, 0);
-
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        consultPreferences();
-    }
-
-    private void consultPreferences(){
-        synctime = sharedPreferences.getString(getString(R.string.pref_sync_list), "1");// pola minuta
-        allowSync = sharedPreferences.getBoolean(getString(R.string.pref_sync), false);
-
-        lookupRadius = sharedPreferences.getString(getString(R.string.pref_radius), "1");//1km
-
-        allowCommentedNotif = sharedPreferences.getBoolean(getString(R.string.notif_on_my_comment_key), false);
-        allowReviewNotif = sharedPreferences.getBoolean(getString(R.string.notif_on_my_review_key), false);
-
-        Toast.makeText(MainActivity.this, allowSync + " " + lookupRadius + " " + synctime, Toast.LENGTH_SHORT).show();
-    }
-
-    private void showLocatonDialog(){
-        if(dialog == null){
-            dialog = new LocationDialog(MainActivity.this).prepareDialog();
-        }else{
-            if(dialog.isShowing()){
-                dialog.dismiss();
-            }
-        }
-
-        dialog.show();
     }
     
     @Override
     protected void onResume() {
-    	// TODO Auto-generated method stub
     	super.onResume();
 
         //Za slucaj da referenca nije postavljena da se izbegne problem sa androidom!
@@ -183,15 +140,12 @@ public class MainActivity extends AppCompatActivity {
             setUpReceiver();
         }
 
-        if(allowSync){
-            int interval = ReviewerTools.calculateTimeTillNextSync(Integer.parseInt(synctime));
-            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
-            Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
-        }
+        int interval = ReviewerTools.calculateTimeTillNextSync(1);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(SYNC_DATA);
-
         registerReceiver(sync, filter);
     }
     

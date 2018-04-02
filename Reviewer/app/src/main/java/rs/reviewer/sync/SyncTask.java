@@ -3,6 +3,8 @@ package rs.reviewer.sync;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import rs.reviewer.MainActivity;
 import rs.reviewer.tools.ReviewerTools;
 
@@ -13,7 +15,6 @@ public class SyncTask extends AsyncTask<Void, Void, Void> {
 
     private Context context;
 
-
     public static String RESULT_CODE = "RESULT_CODE";
 
     public SyncTask(Context context)
@@ -22,16 +23,15 @@ public class SyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected void onPreExecute()
-    {
+    protected void onPreExecute() {
         //postaviti parametre, pre pokretanja zadatka ako je potrebno
     }
 
-
     @Override
     protected Void doInBackground(Void... params) {
-
         //simulacija posla koji se obavlja u pozadini i traje duze vreme
+        Log.i("REZ", "doInBackground");
+
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -44,6 +44,7 @@ public class SyncTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
+        Log.i("REZ", "onPostExecute");
 
         Intent ints = new Intent(MainActivity.SYNC_DATA);
         int status = ReviewerTools.getConnectivityStatus(context);

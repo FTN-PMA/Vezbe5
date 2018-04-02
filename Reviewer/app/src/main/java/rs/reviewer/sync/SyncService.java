@@ -3,6 +3,7 @@ package rs.reviewer.sync;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 import rs.reviewer.tools.ReviewerTools;
 
@@ -15,6 +16,7 @@ public class SyncService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("REZ", "onStartCommand");
 
         //Intent ints = new Intent(MainActivity.SYNC_DATA);
         int status = ReviewerTools.getConnectivityStatus(getApplicationContext());
