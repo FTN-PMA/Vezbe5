@@ -14,6 +14,24 @@ public class NavItem implements Parcelable {
         mIcon = icon;
     }
 
+	protected NavItem(Parcel in) {
+		mTitle = in.readString();
+		mSubtitle = in.readString();
+		mIcon = in.readInt();
+	}
+
+	public static final Creator<NavItem> CREATOR = new Creator<NavItem>() {
+		@Override
+		public NavItem createFromParcel(Parcel in) {
+			return new NavItem(in);
+		}
+
+		@Override
+		public NavItem[] newArray(int size) {
+			return new NavItem[size];
+		}
+	};
+
 	public String getmTitle() {
 		return mTitle;
 	}

@@ -5,16 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,17 +16,19 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import model.NavItem;
-import rs.reviewer.activities.ReviewerPreferenceActivity;
 import rs.reviewer.adapters.DrawerListAdapter;
-import rs.reviewer.dialogs.LocationDialog;
 import rs.reviewer.fragments.MyFragment;
 import rs.reviewer.sync.SyncReceiver;
 import rs.reviewer.sync.SyncService;
 import rs.reviewer.tools.FragmentTransition;
 import rs.reviewer.tools.ReviewerTools;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -76,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         // enable ActionBar app icon to behave as action to toggle nav drawer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -85,15 +79,6 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setHomeButtonEnabled(true);
         }
 
-
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
-//        getActionBar().setHomeButtonEnabled(true);
-
-        // ActionBarDrawerToggle ties together the the proper interactions
-        // between the sliding drawer and the action bar app icon
-
-        // OVO NE MORA DA SE KORISTI, UKOLIKO SE NE KORISTI
-        // ONDA SE NE MENJA TEKST PRILIKOM OPEN CLOSE DRAWERA POGLEDATI JOS
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
@@ -113,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-//        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
             selectItemFromDrawer(0);
@@ -168,8 +152,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent i = new Intent(this, ReviewerPreferenceActivity.class);
-                startActivity(i);
                 return true;
         }
 
@@ -191,8 +173,6 @@ public class MainActivity extends AppCompatActivity {
         }else if(position == 1){
            //..
         }else if(position == 2){
-            Intent preference = new Intent(MainActivity.this,ReviewerPreferenceActivity.class);
-            startActivity(preference);
         }else if(position == 3){
             //..
         }else if(position == 4){
