@@ -16,6 +16,16 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
         int SPLASH_TIME_OUT = 3000;
+
+        /*
+        * Timer je jedna od komponenti koja nam omogucava da zakazmeo
+        * zadatke koji treba da se izvrse u buducnosti, jednom ili periodicno.
+        * Medjutim kada aplikacija nije aktivna, on nece izvrsiti svoj posao.
+        * Idealna primena ovoga je za Splash screen ili pozdravni ili uvodni
+        * ekran za korisnika.
+        * posao koji timer treba izvrsi se opsiuje u run() metodi, a kao drugi
+        * parametar kazemo koliko Timer treba da ceka da bi se posao izvrsio.
+        * */
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

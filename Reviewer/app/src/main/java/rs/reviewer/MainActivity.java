@@ -109,12 +109,28 @@ public class MainActivity extends AppCompatActivity {
     private void setUpReceiver(){
         sync = new SyncReceiver();
 
-        // Retrieve a PendingIntent that will perform a broadcast
+        //definisemo manager i kazemo kada je potrebno da se ponavlja
+        /*
+        parametri:
+            context: this - u komkontekstu zelimo da se intent izvrsava
+            requestCode: 0 - nas jedinstev kod
+            intent: intent koji zelimo da se izvrsi kada dodje vreme
+            flags: 0 - flag koji opisuje sta da se radi sa intent-om kada se poziv desi
+            detaljnije:https://developer.android.com/reference/android/app/PendingIntent.html#getService(android.content.Context, int, android.content.Intent, int)
+        */
         Intent alarmIntent = new Intent(this, SyncService.class);
         pendingIntent = PendingIntent.getService(this, 0, alarmIntent, 0);
+
+        //koristicemo sistemski AlarmManager pa je potrebno da dobijemo
+        //njegovu instancu.
         manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
     }
-    
+
+    /*
+     * Prilikom startovanja aplikacije potrebno je registrovati
+     * elemente sa kojimaa radimo. Kada aplikaciaj nije aktivna
+     * te elemente moramo da uklnimo.
+     */
     @Override
     protected void onResume() {
     	super.onResume();
@@ -124,10 +140,31 @@ public class MainActivity extends AppCompatActivity {
             setUpReceiver();
         }
 
+        /*
+         * Kada zelimo da se odredjeni zadaci ponavljaju, potrebno je
+         * da registrujemo manager koji ce motriti kada je vreme da se
+         * taj posao obavi. Kada registruje vreme za pokretanje zadatka
+         * on emituje Intent operativnom sistemu sta je potrebno da se izvrsi.
+         * Takodje potrebno je da definisemo ponavljanja tj. na koliko
+         * vremena zelimo da se posao ponovo obavi
+         * */
         int interval = ReviewerTools.calculateTimeTillNextSync(1);
+
+        //definisemo kako ce alarm manager da reaguje.
+        //prvi parametar kaze da ce reagovati u rezimu ponavljanja
+        //drugi parametar od kada krece da meri vreme
+        //treci parametar na koliko jedinica vremena ce ragovati (minimalno 1min)
+        //poslednji parametar nam govori koju akciju treba da preduzmemo kada se alarm iskljuci
         manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
 
+        /*
+         * Registrujemo nas BroadcastReceiver i dodajemo mu 'filter'.
+         * Filter koristimo prilikom prispeca poruka. Jedan receiver
+         * moze da reaguje na vise tipova poruka. One nam kazu
+         * sta tacno treba da se desi kada poruka odredjenog tipa (filera)
+         * stigne.
+         * */
         IntentFilter filter = new IntentFilter();
         filter.addAction(SYNC_DATA);
         registerReceiver(sync, filter);
@@ -211,6 +248,10 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    /*
+     * Moramo voditi racuna o komponentama koje je potrebno osloboditi
+     * kada aplikacija nije aktivna.
+     * */
     @Override
     protected void onPause() {
         if (manager != null) {
